@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nilai TP Hadist — Portal SD IT Abu Hurairah Sembalun</title>
+  <link rel="stylesheet" href="responsive.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; min-height: 100vh; display: flex; }
+
+    /* SIDEBAR (identik input-nilai.html) */
+    .sidebar { width: 230px; min-height: 100vh; background: #1a4f8a; display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0; height: 100vh; overflow-y: auto; }
+    .sidebar-header { display: flex; flex-direction: column; align-items: center; padding: 28px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.12); gap: 10px; }
+    .sidebar-school { font-size: 12px; font-weight: 700; color: #fff; text-align: center; line-height: 1.4; text-transform: uppercase; }
+    .sidebar-school span { display: block; font-size: 10px; font-weight: 400; color: rgba(255,255,255,0.55); text-transform: none; margin-top: 2px; }
+    .guru-info { display: flex; align-items: center; gap: 10px; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.12); }
+    .avatar { width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: #fff; flex-shrink: 0; }
+    .guru-name { font-size: 13px; font-weight: 600; color: #fff; }
+    .guru-role { font-size: 11px; color: rgba(255,255,255,0.55); margin-top: 1px; }
+    .nav { padding: 12px 0; flex: 1; }
+    .nav-section-label { font-size: 10px; color: rgba(255,255,255,0.4); padding: 8px 18px 4px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 18px; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.7); border-left: 3px solid transparent; transition: all 0.13s; text-decoration: none; }
+    .nav-item:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-item.active { background: rgba(255,255,255,0.13); color: #fff; border-left-color: #fff; font-weight: 600; }
+    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.8; }
+    .nav-item.active svg { opacity: 1; }
+    .nav-item .soon { margin-left: auto; font-size: 9px; background: rgba(255,255,255,0.15); padding: 2px 6px; border-radius: 20px; font-weight: 600; }
+
+    .nav-parent { display: flex; align-items: center; gap: 10px; padding: 9px 18px; cursor: pointer; font-size: 13px; color: rgba(255,255,255,0.7); border-left: 3px solid transparent; transition: all 0.13s; user-select: none; }
+    .nav-parent:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .nav-parent.open { background: rgba(255,255,255,0.13); color: #fff; border-left-color: #fff; font-weight: 600; }
+    .nav-parent svg { width: 16px; height: 16px; flex-shrink: 0; opacity: 0.8; }
+    .nav-parent.open svg { opacity: 1; }
+    .nav-chevron { margin-left: auto; width: 14px; height: 14px; transition: transform 0.22s ease; opacity: 0.6; flex-shrink: 0; }
+    .nav-parent.open .nav-chevron { transform: rotate(90deg); opacity: 1; }
+    .nav-submenu { overflow: hidden; max-height: 0; transition: max-height 0.28s cubic-bezier(0.4,0,0.2,1); background: rgba(0,0,0,0.15); }
+    .nav-submenu.open { max-height: 200px; }
+    .nav-sub-item { display: flex; align-items: center; gap: 9px; padding: 8px 18px 8px 36px; font-size: 12px; color: rgba(255,255,255,0.6); border-left: 3px solid transparent; text-decoration: none; transition: all 0.13s; cursor: pointer; }
+    .nav-sub-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .nav-sub-item.active { color: #fff; font-weight: 600; background: rgba(255,255,255,0.1); border-left-color: rgba(255,255,255,0.6); }
+    .nav-sub-item svg { width: 13px; height: 13px; flex-shrink: 0; opacity: 0.75; }
+    .nav-sub-item.active svg { opacity: 1; }
+    .sidebar-footer { padding: 14px 18px; border-top: 1px solid rgba(255,255,255,0.12); }
+    .btn-logout { width: 100%; padding: 9px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: rgba(255,255,255,0.8); font-size: 12px; cursor: pointer; }
+    .btn-logout:hover { background: rgba(255,255,255,0.18); }
+
+    /* MAIN */
+    .main { flex: 1; padding: 28px 32px; overflow-y: auto; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .page-title { font-size: 20px; font-weight: 700; color: #1a1a2e; }
+    .page-date { font-size: 13px; color: #999; margin-top: 2px; }
+    .rdot { width: 7px; height: 7px; border-radius: 50%; background: #2d8653; flex-shrink: 0; display:inline-block; }
+    .refresh-info { font-size: 11px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+
+    #warn-bar { display:none; background:#fff3cd; border:1px solid #ffc107; border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#856404; line-height:1.6; }
+    #ok-bar   { display:none; background:#eafff3; border:1px solid #6ee7b7; border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:13px; color:#065f46; line-height:1.6; }
+    .empty { text-align:center; padding:24px; color:#bbb; font-size:13px; }
+    .card { background: #fff; border-radius: 14px; border: 1px solid #eee; padding: 20px 22px; margin-bottom: 20px; }
+    .card-title { font-size:14px; font-weight:700; color:#1a1a2e; margin-bottom:4px; }
+    .card-sub { font-size:12px; color:#999; margin-bottom:16px; }
+
+    /* SESI PICKER */
+    .sesi-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px,1fr)); gap: 12px; }
+    .sesi-card { border: 1.5px solid #e5e5e5; border-radius: 12px; padding: 14px 16px; cursor: pointer; transition: all 0.15s; background:#fff; }
+    .sesi-card:hover { border-color: #1a4f8a; box-shadow: 0 4px 14px rgba(26,79,138,0.1); }
+    .sesi-kelas { font-size: 15px; font-weight: 700; color: #1a1a2e; }
+    .sesi-mapel { font-size: 12.5px; color: #1a4f8a; font-weight: 600; margin-top: 2px; }
+
+    .active-head { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:14px; }
+    .active-kelas { font-size:17px; font-weight:700; color:#1a1a2e; }
+    .active-meta  { font-size:12.5px; color:#999; margin-top:2px; }
+    .btn-ganti { font-size:12px; color:#1a4f8a; background:#eef4fb; border:none; border-radius:8px; padding:7px 12px; cursor:pointer; font-weight:600; flex-shrink:0; }
+
+    /* FORM TAMBAH TP */
+    .tp-teks-input { width:100%; padding:11px 14px; border:1.5px solid #d8e0ea; border-radius:10px; font-size:13.5px; font-family:inherit; margin-bottom:16px; }
+    .tp-teks-input:focus { outline:none; border-color:#1a4f8a; }
+
+    table.tp-tbl { border-collapse: collapse; width: 100%; font-size: 13px; }
+    table.tp-tbl th, table.tp-tbl td { border: 1px solid #e5e9f0; padding: 8px 10px; text-align: left; }
+    table.tp-tbl thead th { background:#f7f9fc; color:#555; font-weight:700; font-size:11px; text-transform:uppercase; letter-spacing:.03em; }
+    table.tp-tbl td.nama-td { font-weight:600; color:#1a1a2e; }
+    table.tp-tbl td.nis-td { color:#aaa; font-size:11px; }
+    table.tp-tbl td.nilai-td { width:110px; text-align:center; }
+    table.tp-tbl input.nilai-input {
+      width:80px; height:34px; text-align:center; border:1.5px solid #d8e0ea; border-radius:8px; font-size:13px; font-family:inherit;
+    }
+    table.tp-tbl input.nilai-input:focus { outline:none; border-color:#1a4f8a; background:#f7fafd; }
+    /* Nilai TP bebas, tidak ada pewarnaan berdasarkan KKM */
+
+    .save-bar { display:flex; align-items:center; justify-content:space-between; margin-top:16px; flex-wrap:wrap; gap:10px; }
+    .save-note { font-size:12px; color:#999; }
+    .btn-simpan { background:#1a4f8a; color:#fff; border:none; border-radius:10px; padding:11px 22px; font-size:13.5px; font-weight:700; cursor:pointer; }
+    .btn-simpan:hover { background:#153f70; }
+    .btn-simpan:disabled { background:#a9bdd4; cursor:not-allowed; }
+
+    /* RIWAYAT TP */
+    .riwayat-item { border: 1.5px solid #e5e9f0; border-radius: 12px; margin-bottom: 12px; overflow:hidden; }
+    .riwayat-head { display:flex; align-items:center; justify-content:space-between; padding:13px 16px; cursor:pointer; background:#fafbfc; gap:10px; }
+    .riwayat-head:hover { background:#f3f6fa; }
+    .riwayat-teks { font-size:13.5px; font-weight:700; color:#1a1a2e; flex:1; }
+    .riwayat-meta { font-size:11.5px; color:#999; display:flex; gap:10px; align-items:center; flex-shrink:0; }
+    .riwayat-chevron { width:14px; height:14px; transition:transform .2s; flex-shrink:0; color:#999; }
+    .riwayat-item.open .riwayat-chevron { transform:rotate(90deg); }
+    .riwayat-body { display:none; padding:14px 16px; border-top:1px solid #eee; }
+    .riwayat-item.open .riwayat-body { display:block; }
+    .riwayat-body table.tp-tbl { font-size:12.5px; }
+    .riwayat-body table.tp-tbl input.nilai-input:disabled { background:#f7f7f7; color:#888; border-color:#e5e5e5; cursor:not-allowed; }
+    .btn-edit-riwayat { font-size:11.5px; font-weight:700; color:#1a4f8a; background:#eef4fb; border:none; border-radius:7px; padding:6px 12px; cursor:pointer; }
+    .btn-edit-riwayat:hover { background:#dcebfa; }
+    .riwayat-footer { display:flex; justify-content:flex-end; gap:10px; margin-top:12px; }
+    .btn-simpan-kecil { background:#1a4f8a; color:#fff; border:none; border-radius:8px; padding:8px 16px; font-size:12.5px; font-weight:700; cursor:pointer; }
+    .btn-batal-kecil { background:#f0f2f5; color:#555; border:none; border-radius:8px; padding:8px 16px; font-size:12.5px; font-weight:600; cursor:pointer; }
+    .badge-jumlah { background:#eef4fb; color:#1a4f8a; font-size:10.5px; font-weight:700; padding:2px 9px; border-radius:20px; }
+    .badge-jumlah.badge-kurang { background:#fff8ee; color:#b45309; }
+    .badge-jumlah.badge-lengkap { background:#f0faf4; color:#2d8653; }
+    .riwayat-item.belum-lengkap { border-color:#fcd9a8; }
+    .riwayat-item.belum-lengkap .riwayat-head { background:#fffaf3; }
+    .riwayat-item.belum-lengkap .riwayat-head:hover { background:#fff4e6; }
+    .btn-susulan { background:#fff3e0; color:#b45309; }
+    .btn-susulan:hover { background:#ffe9c7; }
+    .riwayat-aksi { display:flex; gap:10px; flex-wrap:wrap; }
+    .btn-lihat-semua { font-size:11.5px; font-weight:600; color:#666; background:#f2f3f5; border:none; border-radius:7px; padding:6px 12px; cursor:pointer; }
+    .btn-lihat-semua:hover { background:#e6e8eb; }
+    tr.baris-kosong { background:#fffaf0; }
+    tr.baris-kosong .nilai-input { border-color:#f0b866; }
+    .tag-belum { display:block; font-size:10px; font-weight:700; color:#b45309; margin-top:2px; }
+  </style>
+</head>
+<body>
+
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div style="width:60px;height:60px;background:rgba(255,255,255,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px">🕌</div>
+    <div class="sidebar-school">SD IT Abu Hurairah<br>Sembalun<span>Lombok Timur — NTB</span></div>
+  </div>
+  <div class="guru-info">
+    <div class="avatar" id="sb-inisial">—</div>
+    <div><div class="guru-name" id="sb-nama">Memuat…</div><div class="guru-role" id="sb-role">—</div></div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section-label">Menu Utama</div>
+    <a class="nav-item" href="dashboard-guru.html">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="1" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="1" y="9" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.4"/><rect x="9" y="9" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.4"/></svg>
+      Dashboard</a>
+    <a class="nav-item" href="absensi-guru.html">
+      <svg viewBox="0 0 16 16" fill="none"><circle cx="8" cy="5" r="3" stroke="currentColor" stroke-width="1.4"/><path d="M2 14c0-3 2.7-5 6-5s6 2 6 5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Input Absensi</a>
+    <div id="nav-nilai-group">
+      <div class="nav-parent open" id="nav-nilai-parent" onclick="toggleSubmenuNilai()">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Input Nilai
+        <svg class="nav-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="nav-submenu open" id="submenu-nilai">
+        <a class="nav-sub-item" href="input-nilai.html">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Nilai Sumatif
+        </a>
+        <a class="nav-sub-item active" href="input-nilai-tp.html">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>
+          Nilai TP
+        </a>
+      </div>
+    </div>
+    <a class="nav-item" href="kelola-etalim.html">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2L14 5v4c0 3-3 5-6 5S2 12 2 9V5l6-3z" stroke="currentColor" stroke-width="1.4"/></svg>
+      Kelola E-Ta'lim</a>
+    <a class="nav-item" href="input-itqon.html" id="nav-itqon">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M8 2l1.8 3.7 4 .6-2.9 2.8.7 4L8 11.2 4.4 13.1l.7-4L2.2 6.3l4-.6L8 2z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>
+      Nilai Itqon</a>
+    <a class="nav-item" href="input-tahfizh.html" id="nav-tahfizh">
+      <svg viewBox="0 0 16 16" fill="none"><path d="M3 2h7l3 3v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z" stroke="currentColor" stroke-width="1.4"/><path d="M10 2v4h4" stroke="currentColor" stroke-width="1.4"/><path d="M5 9h6M5 11.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Input Tahfizh</a>
+    <a class="nav-item" href="input-sumatif-tahfizh.html" id="nav-sumatif-tahfizh">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Nilai Sumatif Tahfizh</a>
+    <div id="nav-hadist-group">
+      <div class="nav-parent open" id="nav-hadist-parent" onclick="toggleSubmenuHadist()">
+        <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        Nilai Hadist
+        <svg class="nav-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="nav-submenu open" id="submenu-hadist">
+        <a class="nav-sub-item" href="input-hadist.html">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5h6M5 8h6M5 10.5h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Hafalan Hadist
+        </a>
+        <a class="nav-sub-item" href="input-nilai-hadist.html">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 6h6M5 9h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+          Nilai Sumatif Hadist
+        </a>
+        <a class="nav-sub-item active" href="input-tp-hadist.html">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v5l3 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4"/></svg>
+          Nilai TP Hadist
+        </a>
+      </div>
+    </div>
+    <div class="nav-section-label" style="margin-top:8px">Info</div>
+    <a class="nav-item" href="jadwal-guru.html">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="3" width="14" height="11" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M1 7h14M5 1v4M11 1v4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      Jadwal Pelajaran</a>
+    <a class="nav-item" href="papan-informasi.html">
+      <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="1.4"/><path d="M5 5.5h6M5 8h4.5M5 10.5h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="11.5" cy="10.5" r="0.9" fill="currentColor"/></svg>
+      Papan Informasi</a>
+  </nav>
+  <div class="sidebar-footer"><button class="btn-logout" onclick="doLogout()">&#8592; Keluar</button></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <div><div class="page-title">Nilai TP Hadist</div><div class="page-date" id="today-date"></div></div>
+    <div class="refresh-info"><div class="rdot" id="rdot"></div><span id="rlabel">Penilaian harian/insidental</span></div>
+  </div>
+
+  <div id="warn-bar">⚠️ <span id="warn-msg"></span></div>
+  <div id="ok-bar">✅ <span id="ok-msg"></span></div>
+
+  <!-- STEP 1: pilih kelas + mapel -->
+  <div class="card" id="sesi-picker-card">
+    <div class="card-title">Pilih Kelas &amp; Mata Pelajaran</div>
+    <div class="card-sub">Sama seperti Nilai Sumatif — diambil dari jadwal mengajar Anda.</div>
+    <div class="sesi-grid" id="sesi-grid"><div class="empty">Memuat jadwal…</div></div>
+  </div>
+
+  <!-- STEP 2: TP -->
+  <div id="tp-area" style="display:none">
+
+    <div class="card">
+      <div class="active-head">
+        <div>
+          <div class="active-kelas" id="active-kelas">—</div>
+          <div class="active-meta">TP itu penilaian bebas kapan saja — beda dari Sumatif yang cuma 6 slot tetap.</div>
+        </div>
+        <button class="btn-ganti" onclick="gantiSesi()">↺ Ganti Kelas/Mapel</button>
+      </div>
+    </div>
+
+    <!-- Tambah TP baru -->
+    <div class="card">
+      <div class="card-title">📝 Tambah TP Baru</div>
+      <div class="card-sub">Pilih hadist yang dinilai dari daftar di bawah, lalu isi nilai tiap siswa.</div>
+      <select class="tp-teks-input" id="tp-teks-baru"></select>
+      <div style="overflow-x:auto">
+        <table class="tp-tbl">
+          <thead><tr><th>Nama Siswa</th><th style="width:110px">Nilai</th></tr></thead>
+          <tbody id="tbody-tambah-tp"><tr><td colspan="2" class="empty">Memuat siswa…</td></tr></tbody>
+        </table>
+      </div>
+      <div class="save-bar">
+        <div class="save-note" id="save-note-baru">Isi teks TP dan nilai siswa, lalu simpan.</div>
+        <button class="btn-simpan" id="btn-simpan-baru" onclick="simpanTPBaru()">Simpan TP Baru</button>
+      </div>
+    </div>
+
+    <!-- Riwayat TP -->
+    <div class="card">
+      <div class="card-title">🗂️ Riwayat TP — <span id="mapel-riwayat-label"></span></div>
+      <div class="card-sub">Semua TP yang pernah diinput untuk kelas &amp; mapel ini, terbaru di atas. Klik untuk lihat detail nilai atau edit.</div>
+      <div id="riwayat-list"><div class="empty">Memuat riwayat…</div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  KONFIGURASI — SAMA PERSIS dengan input-nilai.html
+// ═══════════════════════════════════════════════════════════════
+const SS_ID = '1IBSU9uISBaLwEydw-uzviHFCgFwLeywy6EzKqz3GQto';
+const GID = { SISWA: '0', JADWAL: '1914920371' };
+// Backend TERPISAH khusus penilaian Hadist (Sumatif+LM+TP) — SAMA dengan yang
+// dipakai input-nilai-hadist.html. Ganti dengan URL deploy Code-Nilai-Hadist.gs.
+const TP_API_URL = 'https://script.google.com/macros/s/AKfycbxlfU3vknJzsuOC9sBm6f-UcmNQwChW6MAG07sqGfB_p1xwrFhlFymca00oPUWAPgY5/exec';
+
+const HARI  = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+const BULAN = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+
+const MAPEL_DEF = [
+  { nama:'Bahasa Indonesia', match:['BAHASAINDONESIA','B.INDONESIA','INDO','BIND'] },
+  { nama:'Bahasa Inggris',   match:['BAHASAINGGRIS','B.INGGRIS','INGGRIS','BING','ENGLISH'] },
+  { nama:'Matematika',       match:['MATEMATIKA','MTK','MATH'] },
+  { nama:'IPAS',             match:['IPAS'] },
+  { nama:'Calistung',        match:['CALISTUNG','CALI'] },
+  { nama:'PKN',              match:['PKN','PPKN','KEWARGANEGARAAN'] },
+  { nama:'PJOK',             match:['PJOK','PENJASORKES','OLAHRAGA'] },
+  { nama:'Bahasa Arab',      match:['BAHASAARAB','B.ARAB','ARAB'] },
+  { nama:'Adab',             match:['ADAB'] },
+  { nama:'Fikih',            match:['FIKIH','FIQIH','FIQH'] },
+  { nama:'Akidah',           match:['AKIDAH','AQIDAH','AKIDAHAKHLAK'] },
+  { nama:'Kepribadian',      match:['KEPRIBADIAN','KEPRIB','KARAKTER'] },
+];
+// Nilai TP sengaja BEBAS/tidak dibatasi KKM — jadi tidak ada fungsi pewarnaan lulus/tidak lulus di sini.
+
+// ─── Sesi login guru ───────────────────────────────────────────
+const sesiNip   = sessionStorage.getItem('nip');
+const sesiNama  = sessionStorage.getItem('nama');
+const sesiRole  = sessionStorage.getItem('role');
+const sesiWali  = sessionStorage.getItem('wali_kelas') || '';
+const sesiMapel = sessionStorage.getItem('mapel') || '';
+
+function klasifikasiMapel(raw) {
+  var tokens = String(raw || '').split(/,|\/|&|\bdan\b/i).map(function (t) { return t.trim(); }).filter(Boolean);
+  var kat = { tahfizh: false, hadist: false, umum: false };
+  tokens.forEach(function (t) {
+    var tl = t.toLowerCase();
+    if (tl.indexOf('tahfizh') >= 0 || tl.indexOf('tahfiz') >= 0) kat.tahfizh = true;
+    else if (tl.indexOf('hadist') >= 0 || tl.indexOf('hadits') >= 0) kat.hadist = true;
+    else kat.umum = true;
+  });
+  return kat;
+}
+function toggleNav(id, show) { var el = document.getElementById(id); if (el) el.style.display = show ? 'flex' : 'none'; }
+function toggleSubmenuNilai() {
+  const parent = document.getElementById('nav-nilai-parent');
+  const submenu = document.getElementById('submenu-nilai');
+  const open = submenu.classList.contains('open');
+  submenu.classList.toggle('open', !open);
+  parent.classList.toggle('open', !open);
+}
+var katMapel = klasifikasiMapel(sesiMapel);
+document.getElementById('nav-nilai-group').style.display = katMapel.umum ? 'block' : 'none';
+toggleNav('nav-tahfizh', katMapel.tahfizh);
+toggleNav('nav-sumatif-tahfizh', katMapel.tahfizh);
+(function(){ var g = document.getElementById('nav-hadist-group'); if (g) g.style.display = (katMapel.hadist) ? 'block' : 'none'; })();
+
+if (!sesiNip || !sesiNama || sesiRole !== 'guru') { window.location.href = 'index.html'; throw new Error('redirect'); }
+function doLogout() { sessionStorage.clear(); window.location.href = 'index.html'; }
+
+function inisialGuru(nama) {
+  const base = nama.split(',')[0].trim();
+  const honorifics = ['USTADZAH','USTADZ','BAPAK','IBU','PAK','BU','DRS','DRA'];
+  let parts = base.split(/\s+/).filter(Boolean);
+  if (parts.length > 1 && honorifics.includes(parts[0].toUpperCase().replace(/\.$/, ''))) parts = parts.slice(1);
+  if (parts.length === 0) return '??';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+function labelJabatan() {
+  const m = sesiMapel.toUpperCase();
+  if (m === 'GURU KELAS' && sesiWali) return `Wali Kelas ${sesiWali}`;
+  if (m === 'GURU KELAS') return 'Guru Kelas';
+  if (m === 'STAFF ADMINISTRASI') return 'Staff Administrasi';
+  if (m === 'KEPALA SEKOLAH') return 'Kepala Sekolah';
+  if (m) return `Guru ${m.charAt(0) + m.slice(1).toLowerCase()}`;
+  return 'Guru';
+}
+document.getElementById('sb-nama').textContent = sesiNama;
+document.getElementById('sb-role').textContent = labelJabatan();
+document.getElementById('sb-inisial').textContent = inisialGuru(sesiNama);
+
+const now = new Date();
+document.getElementById('today-date').textContent = HARI[now.getDay()] + ', ' + now.getDate() + ' ' + BULAN[now.getMonth()] + ' ' + now.getFullYear();
+
+// ─── Helpers ─────────────────────────────────────────────────
+async function fetchGViz(gid, label) {
+  const url = `https://docs.google.com/spreadsheets/d/${SS_ID}/gviz/tq?tqx=out:json&gid=${gid}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Gagal mengambil "${label}" (HTTP ${res.status})`);
+  const txt = await res.text();
+  const s = txt.indexOf('{'), e = txt.lastIndexOf('}');
+  if (s < 0) throw new Error(`Respons "${label}" tidak valid`);
+  const obj = JSON.parse(txt.slice(s, e + 1));
+  if (!obj.table) throw new Error(`Sheet "${label}" kosong atau tidak ada`);
+  const cols = obj.table.cols.map(c => (c.label || c.id || '').trim().toUpperCase().replace(/_/g, ' '));
+  const rows = (obj.table.rows || []).map(r => (r.c || []).map(cell => {
+    if (!cell || cell.v == null) return '';
+    return String(cell.f != null ? cell.f : cell.v).trim();
+  }));
+  return { cols, rows };
+}
+const norm = s => (s || '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
+// Cocokkan NIP guru login dengan sel "NIP GURU" — sel ini bisa berisi LEBIH DARI SATU
+// NIP sekaligus (mis. "1006, 1005", "1006/1005", "1006 & 1005"), karena 1 sesi
+// (terutama Tahfizh) bisa diampu 2-3 guru sekaligus. Dipisah dengan cara ekstrak
+// SEMUA angka dari sel itu (\d+) — jadi aman berapapun karakter pemisahnya.
+function nipCocok(selNipGuru, nipLogin) {
+  if (!nipLogin) return false;
+  const daftarNip = String(selNipGuru || '').match(/\d+/g) || [];
+  return daftarNip.includes(String(nipLogin).trim());
+}
+// Nama guru tanpa gelar & sapaan (bagian sebelum koma = nama, sesudahnya gelar).
+function namaTanpaGelar(nama) {
+  const hon = ['USTADZAH','USTADZ','BAPAK','IBU','PAK','BU','DRS','DRA'];
+  let parts = String(nama || '').split(',')[0].trim().split(/\s+/).filter(Boolean);
+  while (parts.length > 1 && hon.includes(parts[0].toUpperCase().replace(/\.$/, ''))) parts = parts.slice(1);
+  return parts.join(' ');
+}
+// Cadangan pencocokan lewat NAMA — harus NAMA LENGKAP yang muncul di sel GURU,
+// bukan sekadar kata pertama. (Aturan lama cukup kata pertama, sehingga mis.
+// "BAIQ TULUK ..." ikut tercocokkan dengan jadwal "BAIQ NISA ...".)
+function namaCocok(namaLogin, selGuru) {
+  const nl = norm(namaTanpaGelar(namaLogin));
+  const ng = norm(selGuru);
+  if (nl.length < 4 || !ng) return false;
+  return ng.includes(nl);
+}
+// Aturan UTAMA: kalau baris jadwal punya NIP GURU, NIP-lah penentunya dan nama
+// tidak dipakai sama sekali. Nama hanya dipakai kalau kolom NIP baris itu kosong.
+function guruCocok(selNip, selGuru, nipLogin, namaLogin) {
+  if (/\d/.test(String(selNip || ''))) return nipCocok(selNip, nipLogin);
+  return namaCocok(namaLogin, selGuru);
+}
+function colIdx(cols, ...kws) { for (const kw of kws) { const i = cols.findIndex(c => c.includes(kw)); if (i >= 0) return i; } return -1; }
+function erEl(id, msg) { document.getElementById(id).innerHTML = `<div class="empty" style="color:#e53e3e">⚠️ ${msg}</div>`; }
+function showWarn(msg) { document.getElementById('warn-msg').textContent = msg; document.getElementById('warn-bar').style.display = 'block'; }
+function showOk(msg) { document.getElementById('ok-msg').textContent = msg; document.getElementById('ok-bar').style.display = 'block'; setTimeout(()=>{document.getElementById('ok-bar').style.display='none';}, 4000); }
+function cocokkanMapel(namaJadwal) {
+  const n = norm(namaJadwal);
+  for (const m of MAPEL_DEF) { if (m.match.some(kw => norm(kw) === n)) return m.nama; }
+  return null;
+}
+
+// ── Daftar 42 Hadist Arba'in An-Nawawi (nomor + judul) ──
+// TP Hadist TIDAK diketik bebas seperti mapel umum: guru cukup MEMILIH hadist
+// ke berapa yang sedang dinilai, supaya lebih cepat & seragam penulisannya.
+const HADIST_JUDUL = [
+  { no: 1, judul: `Amalan Bergantung pada Niat` },
+  { no: 2, judul: `Rukun Islam, Iman, dan Ihsan` },
+  { no: 3, judul: `Islam Dibangun di atas Lima Dasar` },
+  { no: 4, judul: `Takdir Setiap Manusia sudah Tertulis` },
+  { no: 5, judul: `Larangan Membuat Sesuatu yang Baru dalam Agama` },
+  { no: 6, judul: `Segala Hal yang Haram dan yang Halal telah Jelas` },
+  { no: 7, judul: `Agama Ini adalah Nasehat` },
+  { no: 8, judul: `Terjaganya Darah dan Harta Seorang Muslim` },
+  { no: 9, judul: `Kerjakanlah Perintah yang Kamu Mampu` },
+  { no: 10, judul: `Larangan Menerima Kecuali yang Baik (Halal)` },
+  { no: 11, judul: `Tinggalkanlah Sesuatu yang Membuatmu Ragu` },
+  { no: 12, judul: `Meninggalkan Perkara yang Tidak Bermanfaat` },
+  { no: 13, judul: `Mencintai Kebaikan untuk Saudaranya` },
+  { no: 14, judul: `Tidak Halal Darah seorang Muslim` },
+  { no: 15, judul: `Barangsiapa Beriman kepada Allah dan Hari Akhir` },
+  { no: 16, judul: `Janganlah Engkau Marah` },
+  { no: 17, judul: `Kewajiban Berlaku Ihsan pada Segala Sesuatu` },
+  { no: 18, judul: `Bertakwalah di manapun Engkau Berada` },
+  { no: 19, judul: `Jagalah Allah niscaya Allah Menjagamu` },
+  { no: 20, judul: `Jika Engkau tidak Malu maka Berbuatlah Sesukamu` },
+  { no: 21, judul: `Istiqamah` },
+  { no: 22, judul: `Apakah Aku akan Masuk Al-Jannah?` },
+  { no: 23, judul: `Kesucian itu Separuh dari Iman` },
+  { no: 24, judul: `Janganlah Kalian saling Menzhalimi` },
+  { no: 25, judul: `Sedekah Terbuka Luas bagi Setiap Muslim` },
+  { no: 26, judul: `Setiap Anggota Tubuh Wajib Bersedekah` },
+  { no: 27, judul: `Kebajikan adalah Akhlak yang Baik` },
+  { no: 28, judul: `Berpegang Teguh pada Sunnah` },
+  { no: 29, judul: `Pintu-Pintu Kebaikan` },
+  { no: 30, judul: `Batasan-Batasan Allah` },
+  { no: 31, judul: `Zuhud terhadap Dunia` },
+  { no: 32, judul: `Larangan Membahayakan Diri dan Orang Lain` },
+  { no: 33, judul: `Bukti bagi Penuduh, Sumpah bagi yang Mengingkari` },
+  { no: 34, judul: `Mengubah Kemungkaran` },
+  { no: 35, judul: `Larangan Saling Dengki dan Membenci` },
+  { no: 36, judul: `Melapangkan Kesulitan Saudara` },
+  { no: 37, judul: `Allah Mencatat Kebaikan dan Keburukan` },
+  { no: 38, judul: `Wali Allah` },
+  { no: 39, judul: `Allah Memaafkan Kesalahan, Lupa, dan Paksaan` },
+  { no: 40, judul: `Jadilah Engkau di Dunia seperti Orang Asing` },
+  { no: 41, judul: `Ikuti Apa yang Aku Bawa` },
+  { no: 42, judul: `Luasnya Ampunan Allah` },
+];
+
+function buildDropdownHadist(selectEl, terpilih) {
+  selectEl.innerHTML = '<option value="">— pilih hadist —</option>' +
+    HADIST_JUDUL.map(h => {
+      const teks = `Hadits Ke ${h.no} — ${h.judul}`;
+      return `<option value="${teks.replace(/"/g, '&quot;')}" ${teks === terpilih ? 'selected' : ''}>${teks}</option>`;
+    }).join('');
+}
+
+let PILIHAN = [];
+let SESI_TERPILIH = null;
+let SISWA_LIST = [];
+
+// ═══════════════════════════════════════════════════════════════
+// STEP 1 — kumpulkan kelas+mapel yang diajar guru ini
+// ═══════════════════════════════════════════════════════════════
+async function muatPilihan() {
+  try {
+    const { cols, rows } = await fetchGViz(GID.JADWAL, 'JADWAL');
+    const iKELAS = colIdx(cols, 'KELAS'), iMAPEL = colIdx(cols, 'MATA PELAJARAN', 'MAPEL'), iNIPG = colIdx(cols, 'NIP GURU', 'NIP');
+    const iGURU = colIdx(cols, 'GURU', 'PENGAJAR');
+    if (iNIPG < 0) { erEl('sesi-grid', 'Kolom "NIP GURU" tidak ditemukan di sheet JADWAL.'); return; }
+
+    const seen = new Set();
+    PILIHAN = [];
+    rows.forEach(r => {
+      if (!guruCocok(r[iNIPG], iGURU >= 0 ? r[iGURU] : '', sesiNip, sesiNama)) return;
+      const kelas = r[iKELAS >= 0 ? iKELAS : 0] || '';
+      const mapelAsli = norm(r[iMAPEL >= 0 ? iMAPEL : ''] || '');
+      // Halaman ini KHUSUS mapel Hadist — mapel lain diabaikan.
+      if (mapelAsli.indexOf('hadist') < 0 && mapelAsli.indexOf('hadits') < 0) return;
+      const mapel = 'Hadist';
+      if (!kelas) return;
+      const key = kelas + '|' + mapel;
+      if (seen.has(key)) return;
+      seen.add(key);
+      PILIHAN.push({ kelas, mapel });
+    });
+
+    renderPilihan();
+  } catch (e) { erEl('sesi-grid', e.message || 'Gagal memuat jadwal.'); }
+}
+
+function renderPilihan() {
+  const el = document.getElementById('sesi-grid');
+  if (!PILIHAN.length) {
+    el.innerHTML = `<div class="empty">Tidak ditemukan mata pelajaran akademik yang Anda ajar.</div>`;
+    return;
+  }
+  el.innerHTML = PILIHAN.map((p, i) => `<div class="sesi-card" onclick="pilihSesi(${i})">
+      <div class="sesi-kelas">Kelas ${p.kelas}</div>
+      <div class="sesi-mapel">${p.mapel}</div>
+    </div>`).join('');
+}
+
+function gantiSesi() {
+  document.getElementById('tp-area').style.display = 'none';
+  document.getElementById('sesi-picker-card').style.display = 'block';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STEP 2 — pilih sesi → muat siswa + riwayat TP
+// ═══════════════════════════════════════════════════════════════
+async function pilihSesi(i) {
+  SESI_TERPILIH = PILIHAN[i];
+  document.getElementById('sesi-picker-card').style.display = 'none';
+  document.getElementById('tp-area').style.display = 'block';
+  document.getElementById('active-kelas').textContent = `Kelas ${SESI_TERPILIH.kelas} — ${SESI_TERPILIH.mapel}`;
+  document.getElementById('mapel-riwayat-label').textContent = `${SESI_TERPILIH.mapel} · Kelas ${SESI_TERPILIH.kelas}`;
+  buildDropdownHadist(document.getElementById('tp-teks-baru'), '');
+  document.getElementById('tbody-tambah-tp').innerHTML = '<tr><td colspan="2" class="empty">Memuat siswa…</td></tr>';
+  document.getElementById('riwayat-list').innerHTML = '<div class="empty">Memuat riwayat…</div>';
+  document.getElementById('ok-bar').style.display = 'none';
+
+  try {
+    const { cols, rows } = await fetchGViz(GID.SISWA, 'SISWA');
+    const iNIS = colIdx(cols, 'NIS'), iNAMA = colIdx(cols, 'NAMA'), iKELAS = colIdx(cols, 'KELAS'), iSTS = colIdx(cols, 'STATUS');
+    const normKelas = norm(SESI_TERPILIH.kelas);
+    SISWA_LIST = rows
+      .filter(r => norm(r[iKELAS >= 0 ? iKELAS : 0] || '') === normKelas)
+      .filter(r => { const st = norm(r[iSTS >= 0 ? iSTS : ''] || 'aktif'); return st === 'aktif' || st === ''; })
+      .map(r => ({ nis: r[iNIS >= 0 ? iNIS : 0] || '', nama: r[iNAMA >= 0 ? iNAMA : 1] || '—' }))
+      .sort((a, b) => a.nama.localeCompare(b.nama));
+  } catch (e) {
+    document.getElementById('tbody-tambah-tp').innerHTML = `<tr><td colspan="2" class="empty" style="color:#e53e3e">⚠️ Gagal memuat siswa: ${e.message}</td></tr>`;
+    return;
+  }
+
+  renderFormTambah();
+  await muatRiwayat();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FORM TAMBAH TP BARU
+// ═══════════════════════════════════════════════════════════════
+function renderFormTambah() {
+  const tbody = document.getElementById('tbody-tambah-tp');
+  if (!SISWA_LIST.length) { tbody.innerHTML = '<tr><td colspan="2" class="empty">Tidak ada siswa aktif di kelas ini.</td></tr>'; return; }
+  tbody.innerHTML = SISWA_LIST.map(s => `
+    <tr data-nis="${s.nis}">
+      <td class="nama-td">${s.nama}<div class="nis-td">NIS ${s.nis}</div></td>
+      <td class="nilai-td"><input type="number" min="0" max="100" class="nilai-input" oninput="onEditNilaiBaru(this)"></td>
+    </tr>`).join('');
+}
+
+function onEditNilaiBaru(el) {
+  // Nilai TP bebas — tidak ada pewarnaan berdasarkan KKM.
+}
+
+async function simpanTPBaru() {
+  const teks = document.getElementById('tp-teks-baru').value.trim();
+  if (!teks) { showWarn('Pilih dulu hadist yang dinilai sebelum simpan.'); return; }
+
+  const siswaData = Array.from(document.querySelectorAll('#tbody-tambah-tp tr[data-nis]')).map(tr => {
+    const nis = tr.dataset.nis;
+    const s = SISWA_LIST.find(x => x.nis === nis);
+    const nilai = tr.querySelector('.nilai-input').value;
+    return { nis, nama: s ? s.nama : '', nilai: nilai === '' ? '' : Number(nilai) };
+  });
+
+  const adaIsi = siswaData.some(s => s.nilai !== '');
+  if (!adaIsi) { showWarn('Isi nilai minimal 1 siswa sebelum simpan.'); return; }
+
+  const btn = document.getElementById('btn-simpan-baru');
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const res = await fetch(TP_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'tambah_tp', kelas: SESI_TERPILIH.kelas, tp_teks: teks, siswa: siswaData }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Gagal menyimpan.');
+    showOk(`TP ke-${json.tp_ke} berhasil disimpan untuk ${json.count} siswa.`);
+    buildDropdownHadist(document.getElementById('tp-teks-baru'), '');
+    renderFormTambah();
+    await muatRiwayat();
+  } catch (e) {
+    showWarn(e.message || 'Gagal menyimpan TP.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan TP Baru';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RIWAYAT TP
+// ═══════════════════════════════════════════════════════════════
+let RIWAYAT_DATA = [];
+
+async function muatRiwayat() {
+  const el = document.getElementById('riwayat-list');
+  try {
+    const url = `${TP_API_URL}?action=tp_riwayat&kelas=${encodeURIComponent(SESI_TERPILIH.kelas)}`;
+    const res = await fetch(url);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Gagal memuat riwayat.');
+    RIWAYAT_DATA = json.data || [];
+    // Nilai TP bebas — kkm dari respons API sengaja tidak dipakai di sini.
+    renderRiwayat();
+  } catch (e) {
+    el.innerHTML = `<div class="empty" style="color:#e53e3e">⚠️ ${e.message}</div>`;
+  }
+}
+
+function renderRiwayat() {
+  const el = document.getElementById('riwayat-list');
+  if (!RIWAYAT_DATA.length) { el.innerHTML = '<div class="empty">Belum ada TP yang diinput untuk kelas &amp; mapel ini.</div>'; return; }
+
+  // TP yang belum lengkap (masih ada siswa kosong) ditaruh PALING ATAS —
+  // supaya guru langsung lihat mana yang perlu susulan tanpa harus scroll.
+  const urutan = [...RIWAYAT_DATA].sort((a, b) => {
+    const belumA = a.siswa.some(s => s.nilai === '' || s.nilai === null) ? 0 : 1;
+    const belumB = b.siswa.some(s => s.nilai === '' || s.nilai === null) ? 0 : 1;
+    if (belumA !== belumB) return belumA - belumB;
+    return b.ke - a.ke;
+  });
+
+  el.innerHTML = urutan.map((tp) => {
+    const idx = RIWAYAT_DATA.indexOf(tp); // index ASLI di RIWAYAT_DATA — dipakai id elemen & fungsi terkait
+    const kosong = tp.siswa.filter(s => s.nilai === '' || s.nilai === null);
+    const jumlahDiisi = tp.siswa.length - kosong.length;
+    const belumLengkap = kosong.length > 0;
+
+    const badge = belumLengkap
+      ? `<span class="badge-jumlah badge-kurang">⚠ ${kosong.length} belum diisi</span>`
+      : `<span class="badge-jumlah badge-lengkap">✓ Lengkap ${jumlahDiisi}/${tp.siswa.length}</span>`;
+
+    const tombolSusulan = belumLengkap
+      ? `<button class="btn-edit-riwayat btn-susulan" onclick="tampilkanTabelTP(${idx}, 'susulan')">📝 Isi Nilai Susulan (${kosong.length} siswa)</button>`
+      : '';
+    const tombolSemua = `<button class="btn-lihat-semua" onclick="tampilkanTabelTP(${idx}, 'semua')">${belumLengkap ? 'Lihat/Edit Semua Siswa' : '✏️ Edit Nilai'}</button>`;
+    const tombolEditTeks = `<button class="btn-edit-riwayat" onclick="bukaEditTeks(${idx})">📝 Ganti Hadist</button>`;
+
+    // Body cuma berisi TOMBOL AKSI dulu — tabel siswa baru dirender waktu
+    // salah satu tombol diklik (hemat tempat, tidak langsung tampilkan
+    // semua nama siswa begitu riwayat dibuka).
+    return `<div class="riwayat-item" id="riwayat-${idx}">
+      <div class="riwayat-head" onclick="toggleRiwayat(${idx})">
+        <div class="riwayat-teks" id="riwayat-teks-${idx}"><span style="color:#1a4f8a;font-weight:800">TP ke-${tp.ke}:</span> ${tp.teks}</div>
+        <div class="riwayat-meta">
+          ${badge}
+          <svg class="riwayat-chevron" viewBox="0 0 16 16" fill="none"><path d="M6 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+      <div class="riwayat-body">
+        <div id="edit-teks-wrap-${idx}" style="display:none;margin-bottom:12px"></div>
+        <div class="riwayat-aksi" id="riwayat-aksi-${idx}">
+          ${tombolSusulan}
+          ${tombolSemua}
+          ${tombolEditTeks}
+        </div>
+        <div id="riwayat-tabel-wrap-${idx}" style="display:none"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRiwayat(idx) {
+  document.getElementById(`riwayat-${idx}`).classList.toggle('open');
+}
+
+// ─── Edit TEKS TP (kalau guru salah ketik indikator/tujuan pembelajaran) ───
+// Teks disimpan berulang di tiap baris siswa untuk ronde itu, jadi server yang
+// memperbarui semuanya sekaligus supaya konsisten.
+function bukaEditTeks(idx) {
+  const tp = RIWAYAT_DATA[idx];
+  const wrap = document.getElementById(`edit-teks-wrap-${idx}`);
+  wrap.innerHTML = `
+    <label style="display:block;font-size:11.5px;font-weight:700;color:#666;margin-bottom:6px">Hadist yang dinilai (TP ke-${tp.ke})</label>
+    <select id="input-teks-${idx}" style="width:100%;padding:10px 12px;border:1.5px solid #cfe0f5;border-radius:9px;font-family:inherit;font-size:13.5px"></select>
+    <div class="riwayat-footer">
+      <button class="btn-batal-kecil" onclick="batalEditTeks(${idx})">Batal</button>
+      <button class="btn-simpan-kecil" id="btn-simpan-teks-${idx}" onclick="simpanEditTeks(${idx})">Simpan Perubahan</button>
+    </div>`;
+  wrap.style.display = 'block';
+  document.getElementById(`riwayat-aksi-${idx}`).style.display = 'none';
+  buildDropdownHadist(document.getElementById(`input-teks-${idx}`), tp.teks);
+  document.getElementById(`input-teks-${idx}`).focus();
+}
+
+function batalEditTeks(idx) {
+  const wrap = document.getElementById(`edit-teks-wrap-${idx}`);
+  wrap.style.display = 'none';
+  wrap.innerHTML = '';
+  document.getElementById(`riwayat-aksi-${idx}`).style.display = 'flex';
+}
+
+async function simpanEditTeks(idx) {
+  const tp = RIWAYAT_DATA[idx];
+  const teksBaru = document.getElementById(`input-teks-${idx}`).value.trim();
+  if (!teksBaru) { showWarn('Pilih dulu hadist yang dinilai.'); return; }
+  if (teksBaru === tp.teks) { batalEditTeks(idx); return; }
+
+  const btn = document.getElementById(`btn-simpan-teks-${idx}`);
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const res = await fetch(TP_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'update_teks_tp', kelas: SESI_TERPILIH.kelas,
+        tp_ke: tp.ke, teks: teksBaru,
+      }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Gagal menyimpan teks TP.');
+    showOk('Hadist untuk TP ini berhasil diperbarui.');
+    await muatRiwayat();
+    document.getElementById(`riwayat-${idx}`).classList.add('open');
+  } catch (e) {
+    showWarn(e.message || 'Gagal menyimpan teks TP.');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Simpan Perubahan';
+  }
+}
+
+function onEditNilaiRiwayat(el) {
+  // Nilai TP bebas — tidak ada pewarnaan berdasarkan KKM.
+}
+
+// mode: 'susulan' → CUMA tampilkan siswa yang nilainya masih kosong.
+//       'semua'   → tampilkan seluruh siswa (buat review/koreksi nilai yang sudah ada).
+function tampilkanTabelTP(idx, mode) {
+  const tp = RIWAYAT_DATA[idx];
+  const daftar = mode === 'susulan' ? tp.siswa.filter(s => s.nilai === '' || s.nilai === null) : tp.siswa;
+
+  const rows = daftar.map(s => {
+    const isKosong = s.nilai === '' || s.nilai === null;
+    return `
+    <tr data-row="${s.row}" class="${isKosong ? 'baris-kosong' : ''}">
+      <td class="nama-td">${s.nama}<div class="nis-td">NIS ${s.nis}</div>${isKosong ? '<span class="tag-belum">Belum diisi</span>' : ''}</td>
+      <td class="nilai-td"><input type="number" min="0" max="100" class="nilai-input" value="${isKosong ? '' : s.nilai}" oninput="onEditNilaiRiwayat(this)"></td>
+    </tr>`;
+  }).join('');
+
+  const wrap = document.getElementById(`riwayat-tabel-wrap-${idx}`);
+  wrap.innerHTML = `
+    <table class="tp-tbl">
+      <thead><tr><th>Nama Siswa</th><th style="width:110px">Nilai</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+    <div class="riwayat-footer">
+      <button class="btn-batal-kecil" onclick="batalTabelTP(${idx})">Batal</button>
+      <button class="btn-simpan-kecil" id="btn-simpan-riwayat-${idx}" onclick="simpanTabelTP(${idx})">Simpan${mode === 'susulan' ? ' Nilai Susulan' : ' Perubahan'}</button>
+    </div>`;
+  wrap.style.display = 'block';
+  document.getElementById(`riwayat-aksi-${idx}`).style.display = 'none';
+}
+
+function batalTabelTP(idx) {
+  document.getElementById(`riwayat-tabel-wrap-${idx}`).style.display = 'none';
+  document.getElementById(`riwayat-tabel-wrap-${idx}`).innerHTML = '';
+  document.getElementById(`riwayat-aksi-${idx}`).style.display = 'flex';
+}
+
+async function simpanTabelTP(idx) {
+  const wrap = document.getElementById(`riwayat-tabel-wrap-${idx}`);
+  const updates = Array.from(wrap.querySelectorAll('tr[data-row]')).map(tr => ({
+    row: Number(tr.dataset.row),
+    nilai: tr.querySelector('.nilai-input').value === '' ? '' : Number(tr.querySelector('.nilai-input').value),
+  }));
+
+  const btn = document.getElementById(`btn-simpan-riwayat-${idx}`);
+  const teksAsli = btn.textContent;
+  btn.disabled = true; btn.textContent = 'Menyimpan...';
+  try {
+    const res = await fetch(TP_API_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'update_tp', updates }),
+    });
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'Gagal menyimpan perubahan.');
+    showOk('Nilai TP berhasil disimpan.');
+    await muatRiwayat();
+    document.getElementById(`riwayat-${idx}`).classList.add('open');
+  } catch (e) {
+    showWarn(e.message || 'Gagal menyimpan perubahan.');
+  } finally {
+    btn.disabled = false; btn.textContent = teksAsli;
+  }
+}
+
+// ─── Init ─────────────────────────────────────────────────────
+muatPilihan();
+
+function toggleSubmenuHadist() {
+  const parent = document.getElementById('nav-hadist-parent');
+  const submenu = document.getElementById('submenu-hadist');
+  if (!parent || !submenu) return;
+  const open = submenu.classList.contains('open');
+  submenu.classList.toggle('open', !open);
+  parent.classList.toggle('open', !open);
+}
+
+// Menu Itqon hanya untuk WALI KELAS. Nilai wali_kelas diisi saat login dari
+// sheet GURU, jadi kalau data wali kelas diubah, guru cukup login ulang.
+(function(){
+  var el = document.getElementById('nav-itqon');
+  if (!el) return;
+  var wali = (sessionStorage.getItem('wali_kelas') || '').trim();
+  el.style.display = wali ? 'flex' : 'none';
+})();
+</script>
+</body>
+</html>
